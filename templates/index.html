@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Document</title>
+    <!-- Latest compiled and minified CSS -->
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
+    
+    <!-- jQuery library -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+    
+    <!-- Latest compiled JavaScript -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
+
+    <!-- Latest VueJS -->
+    <script src="https://unpkg.com/vue"></script>
+    <style>
+        .container {
+            padding-top: 20px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="row">
+            <div class="col-sm-8">
+                <table class="table table-bordered table-stripped table-hover">
+                    <thead>
+                        <tr>
+                            <th>Event_ID</th>
+                            <th>Event_Subject</th>
+                            <th>Event_Content</th>
+                            <th>Timestamp</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for item in data %}
+                        <tr>
+                            <td>{{ item.event_id }}</td>
+                            <td>{{ item.email_subject }}</td>
+                            <td>{{ item.email_content }}</td>
+                            <td>{{ item.timestamp }}</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="col-sm-4 well">
+                <form method="POST" action="{{ url_for('save_email') }}">
+                    <div class="form-group">
+                        <label for="event_id">Event_id</label>
+                        <input class="form-control" type="number" v-model.number="event_id" name="event_id">
+                    </div>
+                    <div class="form-group">
+                        <label for="email_subject">Email_subject</label>
+                        <input class="form-control" type="text" v-model="email_subject" name="email_subject">
+                    </div>
+                    <div class="form-group">
+                        <label for="email_content">Email_content</label>
+                        <input class="form-control" type="text" v-model="email_content" name="email_content">
+                    </div>
+                    <input type="submit" value="send">
+                </form>
+
+            </div>
+        </div>
+    </div>
+    <script>
+        app = new Vue({
+            el: ".container",
+            data: {
+                event_id: "",
+                email_subject: "",
+                email_content: "",
+            },
+            method: {
+                sendData: function(){
+                    proxy = this
+                    $.ajax({
+                        url: "/api",
+                        type: "POST",
+                        data: {},
+                        success: function(result){
+                            alert(result)
+                        }
+                    })
+                }
+            },
+            delimiters: ["[[","]]"]
+        })
+    </script>
+</body>
+</html>
