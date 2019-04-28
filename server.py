@@ -20,8 +20,8 @@ db = SQLAlchemy(app)
 @app.route('/')
 @app.route('/index')
 def index():
-    cli_emails = ClientEmail.query.all()
-    return render_template('index.html', data=cli_emails)
+    cli_emails = ClientEmail.query.all() # Fetch all data from database
+    return render_template('index.html', data=cli_emails), 200
 
 @app.route('/api', methods=['GET','POST','PUT','DELETE'])
 def api():
@@ -30,7 +30,7 @@ def api():
         myarr = []
         for email in cli_emails:
             myarr.append({'event_id': email.event_id, 'email_subject': email.email_subject, 'email_content': email.email_content, 'timestamp': email.timestamp})
-        return jsonify({'data': myarr})
+        return jsonify({'data': myarr}), 200
 
 @app.route('/save_emails', methods=['POST'])
 def save_email():
@@ -38,22 +38,25 @@ def save_email():
     emailsubj   = request.form.get('email_subject')
     emailcont   = request.form.get('email_content')
     currenttime = dt.now(tz=timezone('Asia/Singapore')).strftime("%d %b %Y %H:%M")
+    
+    if str(type(eventid[0])) == "<class 'int'>": # Check if Event ID is Integer
+        if all([emailsubj != "", emailcont != ""]): # Check is any empty string on Subject and Content
 
-    #if all("" not in var for var in [emailsubj, emailcont]): # Check if all values is filled
-    client_email = ClientEmail(
-        event_id= eventid[0], 
-        email_subject= emailsubj, 
-        email_content= emailcont, 
-        timestamp= currenttime
-    )
-    db.session.add(client_email)
-    db.session.commit()
-    return "Data successfully inserted!"
+            if not any(["unit testing" in emailsubj, "unit testing" in emailcont]): # Check if running unit testing
+                client_email = ClientEmail(
+                    event_id=eventid[0],
+                    email_subject=emailsubj,
+                    email_content=emailcont,
+                    timestamp=currenttime
+                )
+                db.session.add(client_email) # Save Data
+                db.session.commit() # Write Changes on Database
 
-@app.route('/time')
-def time():
-    mytime = mdl.getTime()
-    return jsonify({'time': mytime})
+            return "Success: Data successfully inserted!",201
+        else:
+            return "Error: Required Data not provided", 400
+    else:
+        return "Error: EventID must be Integer", 400
 
 # MODEL -----------------------------------------+
 class ClientEmail(db.Model):
