@@ -20,8 +20,11 @@ db = SQLAlchemy(app)
 @app.route('/')
 @app.route('/index')
 def index():
-    cli_emails = ClientEmail.query.all() # Fetch all data from database
-    return render_template('index.html', data=cli_emails), 200
+    try:
+        cli_emails = ClientEmail.query.all() # Fetch all data from database
+        return render_template('index.html', data=cli_emails), 200
+    except:
+        return "Error: Database not found, Run create_db.py first!"
 
 @app.route('/api', methods=['GET','POST','PUT','DELETE'])
 def api():
@@ -31,6 +34,10 @@ def api():
         for email in cli_emails:
             myarr.append({'event_id': email.event_id, 'email_subject': email.email_subject, 'email_content': email.email_content, 'timestamp': email.timestamp})
         return jsonify({'data': myarr}), 200
+
+@app.route('/ajax')
+def ajax():
+    return render_template('async.html'), 200
 
 @app.route('/save_emails', methods=['POST'])
 def save_email():
@@ -45,9 +52,9 @@ def save_email():
             if not any(["unit testing" in emailsubj, "unit testing" in emailcont]): # Check if running unit testing
                 client_email = ClientEmail(
                     event_id=eventid[0],
-                    email_subject=emailsubj,
-                    email_content=emailcont,
-                    timestamp=currenttime
+                    email_subject=emailsubj.encode('utf-8'),
+                    email_content=emailcont.encode('utf-8'),
+                    timestamp=currenttime.encode('utf-8')
                 )
                 db.session.add(client_email) # Save Data
                 db.session.commit() # Write Changes on Database
