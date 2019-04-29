@@ -38,6 +38,7 @@
                             <th>Event_Subject</th>
                             <th>Event_Content</th>
                             <th>Timestamp</th>
+                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -46,7 +47,8 @@
                             <td>{{ item.event_id }}</td>
                             <td>{{ item.email_subject.decode('utf-8') }}</td>
                             <td>{{ item.email_content.decode('utf-8') }}</td>
-                            <td>{{ item.timestamp.decode('utf-8') }}</td>
+                            <td>{{ item.timestamp }}</td>
+                            <td>{{ item.status }}</td>
                         </tr>
                         {% endfor %}
                     </tbody>
