@@ -25,8 +25,8 @@
 <body>
     <div class="container">
         <div class="row">
-            <div class="col-sm-offset-4">
-                <h1>Simple Dashboard</h1>
+            <div class="col-sm-offset-3">
+                <h1>Simple Dashboard with Ajax</h1>
             </div>
         </div>
         <div class="row">
@@ -38,24 +38,19 @@
                             <th>Event_Subject</th>
                             <th>Event_Content</th>
                             <th>Timestamp</th>
-                            <th>Status</th>
                         </tr>
                     </thead>
                     <tbody>
-                        {% for item in data %}
-                        <tr>
-                            <td>{{ item.event_id }}</td>
-                            <td>{{ item.email_subject.decode('utf-8') }}</td>
-                            <td>{{ item.email_content.decode('utf-8') }}</td>
-                            <td>{{ item.timestamp }}</td>
-                            <td>{{ item.status }}</td>
+                        <tr v-for="item in emails">
+                            <td>[[ item.event_id ]]</td>
+                            <td>[[ item.email_subject ]]</td>
+                            <td>[[ item.email_content ]]</td>
+                            <td>[[ item.timestamp ]]</td>
                         </tr>
-                        {% endfor %}
                     </tbody>
                 </table>
             </div>
             <div class="col-sm-4 well">
-                <form method="POST" action="{{ url_for('save_email') }}">
                     <div class="form-group">
                         <label for="event_id">Event_id</label>
                         <input class="form-control" type="number" v-model.number="event_id" name="event_id">
@@ -68,9 +63,7 @@
                         <label for="email_content">Email_content</label>
                         <input class="form-control" type="text" v-model="email_content" name="email_content">
                     </div>
-                    <input type="submit" value="send">
-                </form>
-
+                    <button class="btn btn-primary" @click="sendData()" type="button">Send Data!</button>
             </div>
         </div>
     </div>
@@ -81,21 +74,40 @@
                 event_id: "",
                 email_subject: "",
                 email_content: "",
+                emails: []
             },
-            method: {
+            methods: {
+                getData: function(){
+                    fetch("{{ url_for('api') }}")
+                    .then(response => response.json())
+                    .then(api => {
+                        this.emails = api.data;
+                    })
+                },
                 sendData: function(){
                     proxy = this
                     $.ajax({
-                        url: "/api",
+                        url: "{{ url_for('save_email') }}",
                         type: "POST",
-                        data: {},
+                        data: {
+                            'event_id': proxy.event_id,
+                            'email_subject': proxy.email_subject,
+                            'email_content': proxy.email_content,
+                        },
                         success: function(result){
                             alert(result)
+                            proxy.getData()
+                            proxy.event_id = ""
+                            proxy.email_subject = ""
+                            proxy.email_content = ""
                         }
                     })
                 }
             },
-            delimiters: ["[[","]]"]
+            delimiters: ["[[","]]"],
+            created(){
+                this.getData()
+            }
         })
     </script>
 </body>

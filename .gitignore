@@ -1,0 +1,5 @@
+# Ignore Develepment Folder
+delme/
+
+# Ignore Python Cache Folder
+__pycache__/
