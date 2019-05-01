@@ -30,35 +30,34 @@ def index():                                                            # if Dat
 
 @app.route('/save_emails', methods=['POST'])
 def save_email():                                                       # Save email details into database
-    eventid     = request.form.get('event_id', type=int),
-    emailsubj   = request.form.get('email_subject')
-    emailcont   = request.form.get('email_content')
-    currenttime = dt.now(tz=timezone('Asia/Singapore')).strftime("%d %b %Y %H:%M")
-    
-    if str(type(eventid[0])) == "<class 'int'>":                        # Check if Event ID is Integer
-        if all([emailsubj != "", emailcont != ""]):                     # Check is any empty string on Subject and Content
+    try:
+        eventid     = request.form.get('event_id', type=int),
+        emailsubj   = request.form.get('email_subject')
+        emailcont   = request.form.get('email_content')
+        currenttime = dt.now(tz=timezone('Asia/Singapore')).strftime("%d %b %Y %H:%M")
+        
+        if str(type(eventid[0])) == "<class 'int'>":                        # Check if Event ID is Integer
+            if all([emailsubj != "", emailcont != ""]):                     # Check is any empty string on Subject and Content
 
-            if not any(["unit testing" in emailsubj, "unit testing" in emailcont]): # Check if running unit testing
-                client_email = ClientEmail(
-                    event_id=eventid[0],
-                    email_subject=emailsubj.encode('utf-8'),
-                    email_content=emailcont.encode('utf-8'),
-                    timestamp=currenttime,
-                    status="notsend"
-                )
-                db.session.add(client_email)                            # Save Data
-                db.session.commit()                                     # Write Changes on Database
-                return redirect('/')
+                if not any(["unit testing" in emailsubj, "unit testing" in emailcont]): # Check if running unit testing
+                    client_email = ClientEmail(
+                        event_id=eventid[0],
+                        email_subject=emailsubj.encode('utf-8'),
+                        email_content=emailcont.encode('utf-8'),
+                        timestamp=currenttime,
+                        status="notsend"
+                    )
+                    db.session.add(client_email)                            # Save Data
+                    db.session.commit()                                     # Write Changes on Database
+                    return redirect('/')
+                else:
+                    return "Success: Data successfully inserted!",201
             else:
-                return "Success: Data successfully inserted!",201
+                return "Error: Required Data not provided", 400
         else:
-            return "Error: Required Data not provided", 400
-    else:
-        return "Error: EventID must be Integer", 400
-
-@app.route('/send_email',methods=['POST'])
-def send_email():
-    pass
+            return "Error: EventID must be Integer", 400
+    except:
+        return "Please input another Email ID!"
 
 # EXPERIMANTAL ENDPOINTS ------------------------+
 @app.route('/api', methods=['GET','POST','PUT','DELETE'])               # Experimental Build
