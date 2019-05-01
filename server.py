@@ -18,10 +18,12 @@ db = SQLAlchemy(app)                                                    # Initia
 # ENDPOINTS -------------------------------------+
 @app.route('/')
 @app.route('/index')
-def index():
-    try:                                                                # if Database file is present
-        cli_emails = ClientEmail.query.all()                            # Fetch all data from database
-        return render_template('index.html', data=cli_emails), 200
+def index():                                                            # if Database file is present
+    try:
+        allemail = ClientEmail.query.all()                                  # Fetch all data from database
+        sendemail = ClientEmail.query.filter("status == 'send'").all()
+        notsendemail = ClientEmail.query.filter("status == 'notsend'").all()
+        return render_template('index.html', data={'allemail': allemail, 'sendemail': sendemail, 'notsendemail': notsendemail}), 200
     except:
         db.create_all()
         return redirect('/')
