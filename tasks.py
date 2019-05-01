@@ -35,6 +35,7 @@ def updateData(eventid):
 # RUN -------------------------------------------+
 if __name__ == "__main__":
     print("Email Server is running!")
+
     while True:
         mytime = dt.now().strftime("%d %b %Y %H:%M")
         result = getData(mytime)
