@@ -1,8 +1,8 @@
 
-
 from datetime import datetime, timedelta
 from pytz import timezone
 from celery import Celery
+from tasks import *
 
 app = Celery('wip_task', broker="amqp://localhost//")  # Connect Celery to RabitMQ Server
 
@@ -12,6 +12,10 @@ def test(username):
 
 
 if __name__ == "__main__": 
+    for item in getDataNotsend():
+        timedc = datetime.strptime(item.timestamp+" +0700", "%d %b %Y %H:%M %z")
+        updateData.apply_async(args=item.event_id, eta=timedc)
+
     # [*] Get Timezone from Time
     # mytime = "01 May 2019 20:57 +0700"
     # timedc = datetime.strptime(mytime, "%d %b %Y %H:%M %z")
@@ -26,8 +30,8 @@ if __name__ == "__main__":
     # print(timedc.tzname())
 
     # [*] Applying Timezone to Task with ETA
-    mytime = "01 May 2019 20:52 +0700"
-    now = datetime.strptime(mytime, "%d %b %Y %H:%M %z")
-    target = now + timedelta(seconds=10)
-    print(target)
-    test.apply_async(args=["accalina"],eta=target)
+    # mytime = "01 May 2019 20:52 +0700"
+    # now = datetime.strptime(mytime, "%d %b %Y %H:%M %z")
+    # target = now + timedelta(seconds=10)
+    # print(target)
+    # test.apply_async(args=["accalina"],eta=target)
