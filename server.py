@@ -5,8 +5,9 @@
 # IMPORT ----------------------------------------+
 from flask import Flask, request, jsonify, render_template, redirect    # Main Server
 from flask_sqlalchemy import SQLAlchemy                                 # Database ORM
-from datetime import datetime as dt                                     # Display Current time
+from datetime import datetime as dt, timedelta                          # Display Current time
 from pytz import timezone                                               # Singapore Time Format
+import tasks
 
 # INIT ------------------------------------------+
 app = Flask(__name__)                                                   # Initialize Flask
@@ -34,7 +35,9 @@ def save_email():                                                       # Save e
         eventid     = request.form.get('event_id', type=int),
         emailsubj   = request.form.get('email_subject')
         emailcont   = request.form.get('email_content')
+
         currenttime = dt.now(tz=timezone('Asia/Singapore')).strftime("%d %b %Y %H:%M")
+        # currenttime = (dt.now(tz=timezone('Asia/Jakarta')) + timedelta(minutes=1) ).strftime("%d %b %Y %H:%M")
         
         if str(type(eventid[0])) == "<class 'int'>":                        # Check if Event ID is Integer
             if all([emailsubj != "", emailcont != ""]):                     # Check is any empty string on Subject and Content
@@ -47,8 +50,10 @@ def save_email():                                                       # Save e
                         timestamp=currenttime,
                         status="notsend"
                     )
-                    db.session.add(client_email)                            # Save Data
-                    db.session.commit()                                     # Write Changes on Database
+                    db.session.add(client_email)                                    # Save Data
+                    db.session.commit()                                             # Write Changes on Database
+                    timedc = dt.strptime(currenttime+" +0700", "%d %b %Y %H:%M %z") # Set time to +0700
+                    tasks.sendMailETA.apply_async( args=[eventid[0]], eta=timedc)   # Add event to rabbitMQ
                     return redirect('/')
                 else:
                     return "Success: Data successfully inserted!",201
