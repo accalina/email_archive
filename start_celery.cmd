@@ -1,2 +1,2 @@
 @echo off
-celery -A tasks worker --pool=solo -l info
+celery -A tasks worker -n emailworker --pool=solo -l info
