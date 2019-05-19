@@ -1,102 +1,193 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Document</title>
-    <!-- Latest compiled and minified CSS -->
-    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/css/bootstrap.min.css">
-    
-    <!-- jQuery library -->
+    <meta charset="utf-8">
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    
-    <!-- Latest compiled JavaScript -->
-    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.0/js/bootstrap.min.js"></script>
-
-    <!-- Latest VueJS -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"></script>
+    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.6.3/css/all.css">
     <script src="https://unpkg.com/vue"></script>
     <style>
-        .container {
-            padding-top: 20px;
+        .input-group {
+            margin-top: 10px;
+        }
+
+        #navbar {
+            margin-top: -32px;
+            margin-bottom: 10px;
+        }
+
+        .navbar-brand {
+            margin-left: 100px;
         }
     </style>
 </head>
+
 <body>
+
+
+    <div class="jumbotron text-center">
+        <h1>Email Archive System</h1>
+    </div>
+    <nav id="navbar" class="navbar navbar-expand-sm bg-dark navbar-dark">
+        <a class="navbar-brand" href="#">
+            <!-- Logo -->
+            <img src="https://cdn1.iconfinder.com/data/icons/mail-vol-3/128/email_envelope_letter_mail_message_-85-256.png"
+                height="40px">
+            <!-- <i class='fas fa-mail-bulk' style='font-size:24px'> </i> -->
+            Email System
+        </a>
+        <ul class="navbar-nav">
+            <!-- Menu -->
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link 1</a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="#">Link 2</a>
+            </li>
+        </ul>
+    </nav>
+
+
     <div class="container">
         <div class="row">
-            <div class="col-sm-offset-4">
-                <h1>Simple Dashboard</h1>
-            </div>
-        </div>
-        <div class="row">
+
             <div class="col-sm-8">
-                <table class="table table-bordered table-stripped table-hover">
-                    <thead>
-                        <tr>
-                            <th>Event_ID</th>
-                            <th>Event_Subject</th>
-                            <th>Event_Content</th>
-                            <th>Timestamp</th>
-                            <th>Status</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for item in data %}
-                        <tr>
-                            <td>{{ item.event_id }}</td>
-                            <td>{{ item.email_subject.decode('utf-8') }}</td>
-                            <td>{{ item.email_content.decode('utf-8') }}</td>
-                            <td>{{ item.timestamp }}</td>
-                            <td>{{ item.status }}</td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="col-sm-4 well">
-                <form method="POST" action="{{ url_for('save_email') }}">
-                    <div class="form-group">
-                        <label for="event_id">Event_id</label>
-                        <input class="form-control" type="number" v-model.number="event_id" name="event_id">
+                <h3>Email Data</h3>
+                <hr>
+
+                <ul class="nav nav-tabs" role="tablist">
+                    <li class="nav-item">
+                        <a class="nav-link active" data-toggle="tab" href="#menu1">All Email</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#menu2">Sended Email</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" data-toggle="tab" href="#menu3">Delayed Email</a>
+                    </li>
+                </ul>
+
+                <!-- Tab Panes -->
+                <div class="tab-content">
+                    <div id="menu1" class="container tab-pane active">
+                        <h3>All Email</h3>
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Event_ID</th>
+                                    <th>Event_Subject</th>
+                                    <th>Event_Content</th>
+                                    <th>Timestamp</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in data['allemail'] %}
+                                <tr>
+                                    <td>{{ item.event_id }}</td>
+                                    <td>{{ item.email_subject.decode('utf-8') }}</td>
+                                    <td>{{ item.email_content.decode('utf-8') }}</td>
+                                    <td>{{ item.timestamp }}</td>
+                                    <td>{{ item.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="form-group">
-                        <label for="email_subject">Email_subject</label>
-                        <input class="form-control" type="text" v-model="email_subject" name="email_subject">
+                    <div id="menu2" class="container tab-pane fade">
+                        <h3>Sended Email</h3>
+                        <table class="table table-bordered table-striped table-hover">
+                           <thead>
+                                <tr>
+                                    <th>Event_ID</th>
+                                    <th>Event_Subject</th>
+                                    <th>Event_Content</th>
+                                    <th>Timestamp</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in data['sendemail'] %}
+                                <tr>
+                                    <td>{{ item.event_id }}</td>
+                                    <td>{{ item.email_subject.decode('utf-8') }}</td>
+                                    <td>{{ item.email_content.decode('utf-8') }}</td>
+                                    <td>{{ item.timestamp }}</td>
+                                    <td>{{ item.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <div class="form-group">
-                        <label for="email_content">Email_content</label>
-                        <input class="form-control" type="text" v-model="email_content" name="email_content">
+                    <div id="menu3" class="container tab-pane fade">
+                        <h3>Pending Email</h3>
+                        <table class="table table-bordered table-striped table-hover">
+                            <thead>
+                                <tr>
+                                    <th>Event_ID</th>
+                                    <th>Event_Subject</th>
+                                    <th>Event_Content</th>
+                                    <th>Timestamp</th>
+                                    <th>Status</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for item in data['notsendemail'] %}
+                                <tr>
+                                    <td>{{ item.event_id }}</td>
+                                    <td>{{ item.email_subject.decode('utf-8') }}</td>
+                                    <td>{{ item.email_content.decode('utf-8') }}</td>
+                                    <td>{{ item.timestamp }}</td>
+                                    <td>{{ item.status }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
                     </div>
-                    <input type="submit" value="send">
-                </form>
+                </div>
+
 
             </div>
-        </div>
-    </div>
-    <script>
-        app = new Vue({
-            el: ".container",
-            data: {
-                event_id: "",
-                email_subject: "",
-                email_content: "",
-            },
-            method: {
-                sendData: function(){
-                    proxy = this
-                    $.ajax({
-                        url: "/api",
-                        type: "POST",
-                        data: {},
-                        success: function(result){
-                            alert(result)
-                        }
-                    })
-                }
-            },
-            delimiters: ["[[","]]"]
-        })
-    </script>
+
+            <div class="col-sm-4">
+                <h3>Insert Data</h3>
+                <hr>
+                <form action="{{ url_for('save_email') }}" method="POST">
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Email ID</span>
+                        </div>
+                        <input class="form-control" type="number" name="event_id" id="event_id" value="{{ data['allemail'][-1].event_id + 1 }}">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Email Subject</span>
+                        </div>
+                        <input class="form-control" type="text" name="email_subject" id="email_subject">
+                    </div>
+                    <div class="input-group">
+                        <div class="input-group-prepend">
+                            <span class="input-group-text">Email Content</span>
+                            <textarea name="email_content" id="email_content" cols="30" rows="10"></textarea>
+                        </div>
+                    </div>
+                    <br>
+                    <input class="btn btn-primary" type="submit" value="Send Data">
+                </form>
+            </div>
+
+        </div> <!-- Row -->
+
+    </div> <!-- Container -->
+    <hr>
+
 </body>
+
 </html>
